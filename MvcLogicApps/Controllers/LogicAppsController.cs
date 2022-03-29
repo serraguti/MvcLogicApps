@@ -58,5 +58,43 @@ namespace MvcLogicApps.Controllers
                 await this.service.TablaMultiplicarAsync(numero);
             return View(tabla);
         }
+
+        public IActionResult CreateDoctor()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateDoctor(Doctor doctor)
+        {
+            await this.service.InsertarDoctorAsync(doctor);
+            return RedirectToAction("Doctores");
+        }
+
+        public async Task<IActionResult> Doctores()
+        {
+            List<Doctor> doctores =
+                await this.service.GetDoctoresAsync();
+            return View(doctores);
+        }
+
+        public async Task<IActionResult> DetailsDoctor(int iddoctor)
+        {
+            Doctor doctor = await this.service.FindDoctorAsync(iddoctor);
+            return View(doctor);
+        }
+
+        public IActionResult AnalizarComentario()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AnalizarComentario(string comentario)
+        {
+            string respuesta = await this.service.AnalizarComentarioAsync(comentario);
+            ViewData["RESPUESTA"] = respuesta;
+            return View();
+        }
     }
 }

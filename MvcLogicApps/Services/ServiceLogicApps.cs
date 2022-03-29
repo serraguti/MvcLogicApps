@@ -102,5 +102,95 @@ namespace MvcLogicApps.Services
                 }
             }
         }
+
+        public async Task InsertarDoctorAsync(Doctor doctor)
+        {
+            string urlFlowInsert =
+                "https://prod-50.westeurope.logic.azure.com:443/workflows/631e05ad391e4b8d8ed5d24509fbde55/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=XqcUy5beIjKAVxbhqMRLKFXOrZi59LY4S5llemOUh5w";
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(this.Header);
+                string json = JsonConvert.SerializeObject(doctor);
+                StringContent content =
+                    new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response =
+                    await client.PostAsync(urlFlowInsert, content);
+            }
+        }
+
+        public async Task<List<Doctor>> GetDoctoresAsync()
+        {
+            string urlFlowDoctores =
+                "https://prod-199.westeurope.logic.azure.com:443/workflows/0f8548848ffa46eea56b4a10823e4036/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=DQSh5-MmkERdyD38xvZWG0h3wvsCOTF7qTxOsUV7EwA";
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(this.Header);
+                HttpResponseMessage response =
+                    await client.PostAsync(urlFlowDoctores, null);
+                if (response.IsSuccessStatusCode)
+                {
+                    List<Doctor> doctores =
+                        await response.Content.ReadAsAsync<List<Doctor>>();
+                    return doctores;
+                }else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public async Task<Doctor> FindDoctorAsync(int idDoctor)
+        {
+            string urlFlowDetail =
+                "https://prod-178.westeurope.logic.azure.com:443/workflows/69a224c2720b46349f431204c05d3b76/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=T1JPGXLlEmpX6UZn9gV-9cNJA6mJ8jmv9EAiBse4Fuc";
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(this.Header);
+                var modelId = new { IdDoctor = idDoctor };
+                string json = JsonConvert.SerializeObject(modelId);
+                StringContent content =
+                    new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response =
+                    await client.PostAsync(urlFlowDetail, content);
+                if (response.IsSuccessStatusCode)
+                {
+                    Doctor doctor = await response.Content.ReadAsAsync<Doctor>();
+                    return doctor;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public async Task<string> AnalizarComentarioAsync(string comentario)
+        {
+            string urlFlowSentimientos =
+                "https://prod-224.westeurope.logic.azure.com:443/workflows/448e93a6786e4ad69e8a01bf2c5ee41d/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Mi4WkMnD6aAHw4vMS1Xx9c6jLlnWrDxY24j43ztM5EU";
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(this.Header);
+                var modelComentario = new { Comentario = comentario };
+                string json = JsonConvert.SerializeObject(modelComentario);
+                StringContent content =
+                    new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response =
+                    await client.PostAsync(urlFlowSentimientos, content);
+                if (response.IsSuccessStatusCode)
+                {
+                    string data = await response.Content.ReadAsStringAsync();
+                    return data;
+                }
+                else
+                {
+                    return "Algo está fallando...";
+                }
+            }
+        }
     }
 }
