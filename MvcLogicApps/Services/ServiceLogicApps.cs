@@ -75,7 +75,32 @@ namespace MvcLogicApps.Services
 
         public async Task<List<Tabla>> TablaMultiplicarAsync(int numero)
         {
-
+            string urlTabla =
+                "https://prod-109.westeurope.logic.azure.com:443/workflows/040233c6dd1b4bceb1fdbf64027c5e57/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ROzEZIbPoZM4V2GPP9qVnHgpnx_BjqdH3RbB7CLZiuU";
+            using (HttpClient client = new HttpClient())
+            {
+                var modelNumero = new
+                {
+                    Numero = numero
+                };
+                var json = JsonConvert.SerializeObject(modelNumero);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(this.Header);
+                StringContent content =
+                    new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response =
+                    await client.PostAsync(urlTabla, content);
+                if (response.IsSuccessStatusCode)
+                {
+                    List<Tabla> tabla =
+                        await response.Content.ReadAsAsync<List<Tabla>>();
+                    return tabla;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
     }
 }

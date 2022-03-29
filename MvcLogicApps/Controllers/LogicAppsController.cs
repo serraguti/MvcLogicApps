@@ -45,5 +45,18 @@ namespace MvcLogicApps.Controllers
             ViewData["MENSAJE"] = respuesta;
             return View();
         }
+
+        public IActionResult TablaMultiplicar()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TablaMultiplicar(int numero)
+        {
+            List<Tabla> tabla =
+                await this.service.TablaMultiplicarAsync(numero);
+            return View(tabla);
+        }
     }
 }
